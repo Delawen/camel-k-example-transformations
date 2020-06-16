@@ -163,21 +163,22 @@ exit
 
 ## 3. Running the integration
 
-The integration is all contained in a single file named `Basic.java` ([open](didact://?commandId=vscode.openFolder&projectFilePath=Basic.java&completion=Opened%20the%20Basic.java%20file "Opens the Basic.java file"){.didact}).
+The integration is all contained in a single file named `Transformations.java` ([open](didact://?commandId=vscode.openFolder&projectFilePath=Transformations.java&completion=Opened%20the%20Transformations.java%20file "Opens the Transformations.java file"){.didact}).
+
+Additional generic support classes (customizers) are present in the `customizers` directory, to simplify the configuration of MongoDB, PostgreSQL and the CSV dataformat.
 
 We're ready to run the integration on our `camel-transformations` project in the cluster.
 
 Use the following command to run it in "dev mode", in order to see the logs in the integration terminal:
 
 ```
-kamel run Basic.java -d camel-csv -d camel-jacksonxml -d mvn:org.postgresql:postgresql:jar:42.2.13 \
--d mvn:org.apache.commons:commons-dbcp2:jar:2.7.0 -d camel-jdbc --dev
+kamel run Transformations.java --dev
 ```
-([^ execute](didact://?commandId=vscode.didact.sendNamedTerminalAString&text=camelTerm$$kamel%20run%20Basic.java%20-d%20camel-csv%20-d%20camel-jacksonxml%20-d%20mvn:org.postgresql:postgresql:jar:42.2.13%20-d%20mvn:org.apache.commons:commons-dbcp2:jar:2.7.0%20-d%20camel-jdbc%20--dev&completion=Camel%20K%20basic%20integration%20run%20in%20dev%20mode. "Opens a new terminal and sends the command above"){.didact})
+([^ execute](didact://?commandId=vscode.didact.sendNamedTerminalAString&text=camelTerm$$kamel%20run%20Transformations.java%20--dev&completion=Camel%20K%20transformations%20integration%20run%20in%20dev%20mode. "Opens a new terminal and sends the command above"){.didact})
 
 If everything is ok, after the build phase finishes, you should see the Camel integration running and printing the steps output in the terminal window.
 
-[**To exit dev mode and terminate the execution**, just click here](didact://?commandId=vscode.didact.sendNamedTerminalCtrlC&text=camelTerm&completion=Camel%20K%20basic%20integration%20interrupted. "Interrupt the current operation on the terminal"){.didact} 
+[**To exit dev mode and terminate the execution**, just click here](didact://?commandId=vscode.didact.sendNamedTerminalCtrlC&text=camelTerm&completion=Camel%20K%20transformations%20integration%20interrupted. "Interrupt the current operation on the terminal"){.didact} 
 or hit `ctrl+c` on the terminal window.
 
 > **Note:** When you terminate a "dev mode" execution, also the remote integration will be deleted. This gives the experience of a local program execution, but the integration is actually running in the remote cluster.
@@ -185,10 +186,9 @@ or hit `ctrl+c` on the terminal window.
 To keep the integration running and not linked to the terminal, you can run it without "dev mode", just run:
 
 ```
-kamel run Basic.java -d camel-csv -d camel-jacksonxml -d mvn:org.postgresql:postgresql:jar:42.2.13 \
--d mvn:org.apache.commons:commons-dbcp2:jar:2.7.0 -d camel-jdbc 
+kamel run Transformations.java
 ```
-([^ execute](didact://?commandId=vscode.didact.sendNamedTerminalAString&text=camelTerm$$kamel%20run%20Basic.java%20-d%20camel-csv%20-d%20camel-jacksonxml%20-d%20mvn:org.postgresql:postgresql:jar:42.2.13%20-d%20mvn:org.apache.commons:commons-dbcp2:jar:2.7.0%20-d%20camel-jdbc&completion=Camel%20K%20basic%20integration%20run. "Opens a new terminal and sends the command above"){.didact})
+([^ execute](didact://?commandId=vscode.didact.sendNamedTerminalAString&text=camelTerm$$kamel%20run%20Transformations.java&completion=Camel%20K%20transformations%20integration%20run. "Opens a new terminal and sends the command above"){.didact})
 
 After executing the command, you should be able to see it among running integrations:
 
@@ -197,7 +197,7 @@ oc get integrations
 ```
 ([^ execute](didact://?commandId=vscode.didact.sendNamedTerminalAString&text=camelTerm$$oc%20get%20integrations&completion=Getting%20running%20integrations. "Opens a new terminal and sends the command above"){.didact})
 
-An integration named `basic` should be present in the list and it should be in status `Running`. There's also a `kamel get` command which is an alternative way to list all running integrations.
+An integration named `transformations` should be present in the list and it should be in status `Running`. There's also a `kamel get` command which is an alternative way to list all running integrations.
 
 > **Note:** the first time you've run the integration, an IntegrationKit (basically, a container image) has been created for it and 
 > it took some time for this phase to finish. When you run the integration a second time, the existing IntegrationKit is reused 
@@ -206,13 +206,13 @@ An integration named `basic` should be present in the list and it should be in s
 Even if it's not running in dev mode, you can still see the logs of the integration using the following command:
 
 ```
-kamel log basic
+kamel log transformations
 ```
-([^ execute](didact://?commandId=vscode.didact.sendNamedTerminalAString&text=camelTerm$$kamel%20log%20basic&completion=Show%20integration%20logs. "Opens a new terminal and sends the command above"){.didact})
+([^ execute](didact://?commandId=vscode.didact.sendNamedTerminalAString&text=camelTerm$$kamel%20log%20transformations&completion=Show%20integration%20logs. "Opens a new terminal and sends the command above"){.didact})
 
-The last parameter ("basic") is the name of the running integration for which you want to display the logs.
+The last parameter ("transformations") is the name of the running integration for which you want to display the logs.
 
-[**Click here to terminate the log stream**](didact://?commandId=vscode.didact.sendNamedTerminalCtrlC&text=camelTerm&completion=Camel%20K%20basic%20integration%20interrupted. "Interrupt the current operation on the terminal"){.didact} 
+[**Click here to terminate the log stream**](didact://?commandId=vscode.didact.sendNamedTerminalCtrlC&text=camelTerm&completion=Camel%20K%20transformations%20integration%20interrupted. "Interrupt the current operation on the terminal"){.didact} 
 or hit `ctrl+c` on the terminal window.
 
 Closing the log does not terminate the integration. It is still running, as you can see with:

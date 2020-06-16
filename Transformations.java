@@ -1,20 +1,18 @@
-// camel-k: language=java
+// camel-k: language=java property-file=transformation.properties dependency=camel:jacksonxml dependency=camel:http
+// camel-k: source=customizers/MongoCustomizer.java source=customizers/CSVCustomizer.java source=customizers/PostgreSQLCustomizer.java
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.model.dataformat.CsvDataFormat;
 import org.apache.camel.processor.aggregate.AbstractListAggregationStrategy;
-import org.apache.camel.processor.aggregate.AggregateController;
 
-public class Basic extends RouteBuilder {
+public class Transformations extends RouteBuilder {
 
 @Override
   public void configure() throws Exception {
@@ -32,18 +30,14 @@ public class Basic extends RouteBuilder {
     //Aggregate all messages into one message with the list of bodies
     AggregationStrategy aggregationStrategy = new CollectToListStrategy();
 
-    //Setup data sources to connect to DB
-    initializeMongoDBDataSource();
-    initializePostgresDataSource();
-
     //This is the actual route
     from("timer:java?period=100000")
         // Reference URL for air quality e-Reporting on EEA
         // https://www.eea.europa.eu/data-and-maps/data/aqereporting-2
 
         //We start by reading our data.csv file, looping on each row
-        .to("https://raw.githubusercontent.com/Delawen/camel-k-example-transformations/master/data.csv")
-        .unmarshal(getCsvDataFormat())
+        .to("{{source.csv}}")
+        .unmarshal("customCSV")
         .split(body()).streaming()
 
         //we store on exchange properties all the data we are interested in
@@ -77,38 +71,6 @@ public class Basic extends RouteBuilder {
         //Write some log to know it finishes properly
         .log("Information stored")
         .to("log:info?showBodyType=true");
-  }
-
-private CsvDataFormat getCsvDataFormat() {
-  CsvDataFormat csvDataFormat = new CsvDataFormat();
-  csvDataFormat.setAllowMissingColumnNames(true);
-  csvDataFormat.setUseMaps(true);
-  return csvDataFormat;
-}
-
-  private void initializeMongoDBDataSource() {
-        //These are the credentials to our mongoDB 
-        char[] password = "transformations".toCharArray();
-        com.mongodb.MongoCredential credentials = com.mongodb.MongoCredential.createCredential(
-                                                                "camel-k-example", "example", password);
-        com.mongodb.MongoClientOptions options = com.mongodb.MongoClientOptions.builder().build();
-        com.mongodb.MongoClient mongo = new com.mongodb.MongoClient(
-                                                new com.mongodb.ServerAddress("mongodb"), 
-                                                credentials, 
-                                                options);
-        bindToRegistry("mongoBean", mongo);
-  }
-
-  private void initializePostgresDataSource() throws Exception {
-    java.sql.DriverManager.registerDriver(
-              (java.sql.Driver) Class.forName("org.postgresql.Driver").newInstance());
-    org.apache.commons.dbcp2.BasicDataSource dataSource 
-        = new org.apache.commons.dbcp2.BasicDataSource();
-    dataSource.setUrl("jdbc:postgresql://postgresql:5432/example");
-    dataSource.setUsername("camel-k-example");
-    dataSource.setPassword("transformations");
-    dataSource.setValidationQuery("SELECT 1");
-    bindToRegistry("postgresBean", dataSource);
   }
 
   private final class CollectToListStrategy 
@@ -165,12 +127,12 @@ private final class DBProcessor implements Processor {
 
 private final class XMLProcessor implements Processor {
 		@Override
-		  public void process(Exchange exchange) throws Exception {
-		    @SuppressWarnings("unchecked")
-		    Map<String, String> body = exchange.getIn().getBody(Map.class);
-		    exchange.setProperty("address", body.get("addressparts"));
-		  }
-	}
+    public void process(Exchange exchange) throws Exception {
+      @SuppressWarnings("unchecked")
+      Map<String, String> body = exchange.getIn().getBody(Map.class);
+      exchange.setProperty("address", body.get("addressparts"));
+    }
+}
 
 private final class CSVProcessor implements Processor {
 		@Override
