@@ -1,6 +1,6 @@
 Feature: integration print the correct messages
 
   Scenario:
-    Given integration basic is running
-    Then integration basic should print Information stored
+    Given integration transformations is running
+    Then integration transformations should print Information stored
 
