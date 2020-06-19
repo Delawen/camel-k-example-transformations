@@ -18,7 +18,6 @@ done
 # ensure postgresql pod is deployed and Ready
 oc wait pod $PGPOD  -n ${YAKS_NAMESPACE}  --for condition=Ready
 
-# populate database with dummy data
-oc rsh -n ${YAKS_NAMESPACE} $PGPOD  \
- psql -U camel-k-example example \
- -c "CREATE TABLE descriptions (id varchar(10), info varchar(30));INSERT INTO descriptions (id, info) VALUES ('SO2', 'Nitric oxide is a free radical');INSERT INTO descriptions (id, info) VALUES ('NO2', 'Toxic gas');"
+oc rsync $PGPOD:/tmp/sql/ sql
+
+oc rsh  -n ${YAKS_NAMESPACE} $PGPOD /tmp/sql/populate.sh
