@@ -2,7 +2,12 @@ config:
   namespace:
     temporary: true
 pre:
+- name: Create MongoDB 
+  script: scripts/createMongoDB.sh
+- name: Create PostgreSQL 
+  script: scripts/createPostgreSQL.sh
 - name: integrations
   run: |
+    cd ..
     kamel install -w -n ${YAKS_NAMESPACE}
-    kamel run ../Transformations.java -n ${YAKS_NAMESPACE}
+    kamel run Transformations.java -n ${YAKS_NAMESPACE}
