@@ -9,5 +9,5 @@ pre:
 - name: integrations
   run: |
     cd ..
-    kamel install -w -n ${YAKS_NAMESPACE}
+    kamel install -w -n ${YAKS_NAMESPACE} --olm-channel=stable
     kamel run Transformations.java -n ${YAKS_NAMESPACE}
