@@ -1,0 +1,10 @@
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:  
+  annotations:
+    olm.providedAPIs: PerconaServerMongoDB.v1-4-0.psmdb.percona.com,PerconaServerMongoDBBackup.v1.psmdb.percona.com,PerconaServerMongoDBRestore.v1.psmdb.percona.com
+  generateName: mongodb-operator-
+  namespace: YAKS_NAMESPACE
+spec:
+  targetNamespaces:
+    - YAKS_NAMESPACE

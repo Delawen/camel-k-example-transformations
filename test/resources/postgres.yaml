@@ -1,0 +1,19 @@
+apiVersion: postgresql.dev4devs.com/v1alpha1
+kind: Database
+metadata:
+  name: mypostgres
+spec:
+  size: 1
+  databaseMemoryLimit: "512Mi"
+  databaseMemoryRequest: "128Mi"
+  databaseCpuLimit: "60m"
+  databaseCpu: "30m"
+  databaseStorageRequest: "1Gi"
+  image: "centos/postgresql-96-centos7"
+  databaseNameKeyEnvVar: "POSTGRESQL_DATABASE"
+  databasePasswordKeyEnvVar: "POSTGRESQL_PASSWORD"
+  databaseUserKeyEnvVar: "POSTGRESQL_USER"
+
+  databaseName: "example"
+  databasePassword: "transformations"
+  databaseUser: "camel-k-example"

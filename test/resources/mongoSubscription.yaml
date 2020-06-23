@@ -1,0 +1,11 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: percona-server-mongodb-operator-certified
+spec:
+  channel: stable
+  installPlanApproval: Automatic
+  name: percona-server-mongodb-operator-certified
+  source: certified-operators
+  sourceNamespace: openshift-marketplace
+  startingCSV: percona-server-mongodb-operator.v1.4.0

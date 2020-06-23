@@ -1,13 +1,16 @@
 #!/bin/bash
-oc delete template mypostgresql -n openshift
-oc apply -f resources/postgresql-ephemeral.yaml
 
-oc new-app -n ${YAKS_NAMESPACE} --name="postgres" --template=mypostgresql \
--e POSTGRESQL_USER=camel-k-example \
--e POSTGRESQL_PASSWORD=transformations \
--e POSTGRESQL_DATABASE=example
+# install Operator
+oc create -f resources/postgresSubscription.yaml -n ${YAKS_NAMESPACE}
+oc create -f resources/postgresOperator.yaml -n ${YAKS_NAMESPACE}
 
-# wait for the postgres pod to be created 
+# ensure operator pod is deployed and Ready
+oc wait pod -l name=postgres-operator --for condition=Ready --timeout=120s -n ${YAKS_NAMESPACE}
+
+#create database
+oc create -f resources/postgres.yaml -n ${YAKS_NAMESPACE} 
+
+# wait for the postgres pod to be created
 export PGPOD=""
 
 while [[ -z $PGPOD ]]
@@ -15,11 +18,10 @@ do
   echo "Waiting for PostgreSQL pod to become alive"
   sleep 5
   export PGPOD=$(oc get pods -n ${YAKS_NAMESPACE} -o custom-columns=POD:.metadata.name --no-headers | \
-  grep postgresql | grep -v deploy)
+  grep mypostg | grep -v deploy)
 done
 
-# ensure postgresql pod is deployed and Ready
-oc wait pod $PGPOD  -n ${YAKS_NAMESPACE}  --for condition=Ready
+oc wait pod/$PGPOD --for condition=Ready --timeout=120s -n ${YAKS_NAMESPACE}
 
 # populate database
 oc rsync -n ${YAKS_NAMESPACE} sql $PGPOD:/tmp/
